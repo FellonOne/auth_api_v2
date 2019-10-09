@@ -109,5 +109,3 @@ test('User try login without once credential parametr (login)', async t => {
   }
   t.is(count, 1);
 });
-
-test.todo('User receives 401 on expired token');

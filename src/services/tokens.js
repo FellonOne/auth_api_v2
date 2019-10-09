@@ -55,6 +55,7 @@ class Tokens {
           uid: UID,
           user_id: user.id,
         });
+      
       const db = new this.GlobalToken({
         refresh_token: refreshToken,
         user_id: user.id,
@@ -64,6 +65,7 @@ class Tokens {
         active: true,
         uid: UID,
       });
+  
       await db.save();
       return true;
     } catch (err) {
@@ -78,9 +80,20 @@ class Tokens {
         active: false,
         refresh_token: refreshToken
       });
-      userData.id = userData.user_id;
 
-      return this.getTokens(userData, UID, 'refresh');
+      if (userData.length !== 1) { 
+        const err = new Error(`Error in updateRefreshToken when tryed find user in db by refresh token (rt = ${refreshToken})`);
+        err.status = 401;
+        throw err;
+      }
+      userData.id = userData[0].user_id;
+
+      return this.getTokens({
+        full_name: userData[0].full_name,
+        id: userData[0].user_id,
+        login: userData[0].login,
+        roles_id: userData[0].roles_id,
+      }, UID, 'refresh');
     } catch (err) {
       logger.log(err); return null;
     }

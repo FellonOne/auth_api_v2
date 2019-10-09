@@ -1,7 +1,7 @@
 const Koa = require('koa');
 const Router = require('koa-router');
 const authRouter = require('./controllers/auth');
-const ssoRouter = require('./controllers/sso');
+const refreshRouter = require('./controllers/refresh');
 const uid = require('./middleware/uid');
 const mongoose = require('./database/mongoose');
 
@@ -22,7 +22,7 @@ function createApp() {
         Connect all routes
     */
     router.use('/api/v1/auth', authRouter.routes());
-    router.use('/api/v1/global', ssoRouter.routes());
+    router.use('/api/v1/global', refreshRouter.routes());
 
     app.use(router.allowedMethods());
     app.use(router.routes());
