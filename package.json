@@ -12,7 +12,11 @@
   "betterScripts": {
     "test": {
       "command": "ava --verbose",
-      "env": {}
+      "env": {
+        "DB_MONGO_BASE": "testBase",
+        "PG_DB": "lacore_mlm_test",
+        "JWT_SECRET": "12345"
+      }
     }
   },
   "lint-staged": {

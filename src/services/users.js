@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const pg = require('../database/postgres');
+const logger = require('./logger');
 
 class Users {
   constructor(pgPool, bcryptjs) {
@@ -8,14 +9,27 @@ class Users {
   }
 
   async findByLogin(userLogin) {
-    const result = await this.pg.query(
-      'SELECT id, full_name, roles_id, login, password FROM users WHERE login = $1',
-      [userLogin]
-    );
+    try {
+      const result = await this.pg.query(
+        'SELECT id, full_name, roles_id, login, password FROM users WHERE login = $1',
+        [userLogin]
+      );
+      return (result.rowCount > 0) ? result.rows[0] : null;
+    } catch (pgError) {
+      logger.log(pgError); return null;
+    }
+  }
 
-    if (result.rowCount === 0)
-      return null;
-    return result.rows[0];
+  async findById(userId) {
+    try { 
+      const result = await this.pg.query(
+        'SELECT id, full_name, roles_id, login, password FROM users WHERE id = $1',
+        [userId]
+      );
+      return (result.rowCount > 0) ? result.rows[0] : null;
+    } catch (pgError) {
+      logger.log(pgError); return null;
+    }
   }
   
   async comparePassword(userPassword, inputPassword) {

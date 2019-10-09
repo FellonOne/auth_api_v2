@@ -1,6 +1,9 @@
 const Koa = require('koa');
 const Router = require('koa-router');
 const authRouter = require('./controllers/auth');
+const ssoRouter = require('./controllers/sso');
+const uid = require('./middleware/uid');
+const mongoose = require('./database/mongoose');
 
 const config = require('../config');
 
@@ -11,11 +14,15 @@ const config = require('../config');
 function createApp() {
     const app = new Koa();
     const router = new Router();
-
+    /*
+        Middlewares
+    */
+    app.use(uid);
     /*
         Connect all routes
     */
     router.use('/api/v1/auth', authRouter.routes());
+    router.use('/api/v1/global', ssoRouter.routes());
 
     app.use(router.allowedMethods());
     app.use(router.routes());

@@ -1,6 +1,7 @@
 const Router = require('koa-router');
 const bodyParser = require('koa-bodyparser');
 const userService = require('../services/users');
+const tokenService = require('../services/tokens');
 
 const router = new Router();
 
@@ -33,19 +34,20 @@ router.post('/login', bodyParser(), async ctx => {
         body: {}
       }
     } else {
+      const tokens = await tokenService.getTokens(userDB, ctx.state.UID);
+      if (tokens === null) { const error = Error(`Tokens didn't get on user = ${userDB.id}`); error.status = 404; throw error; }
       ctx.status = 200;
       ctx.body = {
         state: 'success',
-        body: {
-          accessToken: 'accessToken',
-          refreshToken: 'refreshToken',
-        },
+        body: tokens,
         fields: []
       }
     }
-
-    
   }
+});
+
+router.post('/logout', async ctx => {
+  //
 });
 
 module.exports = router;
