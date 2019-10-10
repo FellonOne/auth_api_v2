@@ -7,7 +7,8 @@
     "start": "node src/app.js",
     "test": "better-npm-run test",
     "lint": "eslint src tests",
-    "precommit": "lint-staged"
+    "precommit": "lint-staged",
+    "dev": "nodemon src/app.js"
   },
   "betterScripts": {
     "test": {
@@ -15,7 +16,8 @@
       "env": {
         "DB_MONGO_BASE": "testBase",
         "PG_DB": "lacore_mlm_test",
-        "JWT_SECRET": "12345"
+        "JWT_SECRET": "12345",
+        "AVA_TEST": "true"
       }
     }
   },
@@ -52,6 +54,7 @@
     "eslint-plugin-import": "^2.18.2",
     "husky": "^3.0.7",
     "lint-staged": "^9.4.1",
+    "nodemon": "^1.19.3",
     "supertest-koa-agent": "^0.3.2"
   },
   "prettier": {

@@ -9,8 +9,8 @@ const logger = require('../services/logger');
 
 const router = new Router();
 
-router.post('/refresh', bodyParser(), async ctx => {
-  const { refreshToken } = ctx.request.body;
+router.get('/refresh', bodyParser(), async ctx => {
+  const refreshToken = ctx.cookies.get('LAC_RT');
 
   if (refreshToken === null || refreshToken === undefined || refreshToken === '') {
     const err = new Error(`Empty body for /global/refresh`); 
@@ -28,16 +28,15 @@ router.post('/refresh', bodyParser(), async ctx => {
 
     if (activatedResfreshToken.length === 0) {
        const err = new Error(`Refresh token doesn't exist in MongoDB (UID = ${ctx.state.UID})`);
-       err.status = 401; throw err;
+       err.status = 404; throw err;
     }
 
     if (activatedResfreshToken[0].active === false) {
       await globalToken.deleteMany({
         user_id: activatedResfreshToken[0].user_id
       });
-
       const err = new Error(`SECURITY ERROR!\nFOR userID = ${activatedResfreshToken[0].user_id}; Try used disactivated RT`);
-      err.status = 401; throw err;
+      err.status = 404; throw err;
     }
     /** End Security check block */
 
@@ -47,22 +46,30 @@ router.post('/refresh', bodyParser(), async ctx => {
       },
       { '$set': { active: false } }
     ); 
+    
 
     const newTokens = await tokenService.updateRefreshToken(refreshToken, ctx.state.UID);
-    if (newTokens === null) { 
-      const err = new Error(`Cannot update jwt (in class method); rt = ${refreshToken}`); err.status = 401; throw err;
+    if (newTokens === null) {
+      const err = new Error(`Cannot update jwt (in class method); rt = ${refreshToken}`); err.status = 404; throw err;
     }
-    
+
+    tokenService.setCookies(newTokens, ctx);
+
     ctx.status = 200;
     ctx.body = {
       state: 'success',
-      body: newTokens,
+      body: {
+        login: activatedResfreshToken[0].login,
+        full_name: activatedResfreshToken[0].full_name,
+        user_id: activatedResfreshToken[0].user_id,
+        roles_id: activatedResfreshToken[0].roles_id
+      },
       fields: []
     }
 
   } catch (jwtVerifyError) {
     logger.log(jwtVerifyError);
-    ctx.status = 401;
+    ctx.status = 404;
     ctx.body = {
       state: 'error',
       message: 'token expired'

@@ -9,12 +9,15 @@ class Tokens {
     this.expiredInAccess = expiredInAccess;
     this.expiredInRefresh = expiredInRefresh;
     this.GlobalToken = globalToken;
+    this.month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jul', 'Jun', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    this.accessTokemCookieExp = 1000*60*60;
+    this.refreshTokenCookieExp = 1000*60*60*24*30;
   }
 
   async getTokens(user, UID, MODE = 'login') {
     const accessToken = jwt.sign(
       {
-        id: user.id,
+        user_id: user.id,
         full_name: user.full_name,
         login: user.login,
         roles_id: user.roles_id,
@@ -26,7 +29,7 @@ class Tokens {
     );
 
     const refreshToken = jwt.sign(
-      {},
+      { user_id: user.id, time: Date.now() },
       this.JWT_SECRET,
       {
         expiresIn: this.expiredInRefresh
@@ -97,6 +100,25 @@ class Tokens {
     } catch (err) {
       logger.log(err); return null;
     }
+  }
+
+  setCookies({ accessToken, refreshToken }, ctx) {
+    ctx.cookies.set('LAC_AT', accessToken, {
+      httpOnly: true,
+      maxAge: this.accessTokemCookieExp,
+    });
+    ctx.cookies.set('LAC_RT', refreshToken, {
+      httpOnly: true,
+      maxAge: this.refreshTokenCookieExp
+    });
+    ctx.cookies.set('UID', ctx.state.UID, {
+      httpOnly: true,
+      maxAge: 1000*60*60*24*365
+    });
+  }
+
+  getMoth(id) {
+    return this.month[id];
   }
 }
 

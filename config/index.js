@@ -20,5 +20,6 @@ module.exports = rc('LacoreAuthApi', {
   DB_MONGO_BASE: process.env.DB_MONGO_BASE,
   AUTH_STATIC_URL: process.env.AUTH_STATIC_URL,
   SSO_ACTIVATE: process.env.SSO_ACTIVATE ? process.env.SSO_ACTIVATE : '12345',
-  BEARER_SECRET: process.env.BEARER_SECRET ? process.env.BEARER_SECRET : 12345
+  BEARER_SECRET: process.env.BEARER_SECRET ? process.env.BEARER_SECRET : 12345,
+  AVA_TEST: process.env.AVA_TEST,
 });
