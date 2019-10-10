@@ -89,54 +89,21 @@ test('404 and error on activate used refresh token on /global/refrseh', async t 
     uid,
     roles_id: 2,
     login: 'test2@user',
-    active: true,
+    active: false,
   });
 
   await tokenDb.save();
 
   const res = await app.get('/api/v1/global/refresh')
+    .withCredentials()
     .set(
       'Cookie', `UID=${uid};LAC_RT=${refreshToken}`
     );
 
-  t.is(res.status, 200);
-  t.is(res.body.state, 'success');
-  t.true(typeof res.body.body.full_name === "string");
-  t.true(typeof res.body.body.login === "string");
-  t.true(typeof parseInt(res.body.body.user_id, 10) === "number");
-  t.true(typeof parseInt(res.body.body.roles_id, 10) === "number");
-
-  t.is(res.body.body.user_id, 20);
-  t.is(res.body.body.login, 'test2@user');
-  t.is(res.body.body.full_name, 'test2');
-  t.is(res.body.body.roles_id, 2);
-  
-  const secondRes = await app.get('/api/v1/global/refresh')
-    .set(
-      'Cookie', `UID=${uid};LAC_RT=${res.headers['set-cookie'][1].split(';')[0].split('=')[1]}`
-    )
-  
-  t.is(secondRes.status, 200);
-  t.is(secondRes.body.state, 'success');
-  t.true(typeof secondRes.body.body.full_name === "string");
-  t.true(typeof secondRes.body.body.login === "string");
-  t.true(typeof parseInt(secondRes.body.body.user_id, 10) === "number");
-  t.true(typeof parseInt(secondRes.body.body.roles_id, 10) === "number");
-
-  t.is(secondRes.body.body.user_id, 20);
-  t.is(secondRes.body.body.login, 'test2@user');
-  t.is(secondRes.body.body.full_name, 'test2');
-  t.is(secondRes.body.body.roles_id, 2);
-  
-  
-  const usedRefreshToken = await app.get('/api/v1/global/refresh')
-    .set(
-      'Cookie', `UID=${uid};LAC_RT=${refreshToken}`
-    );
-
-  t.is(usedRefreshToken.status, 404);
-  t.is(usedRefreshToken.body.state, 'error');
+  t.is(res.status, 404);
+  t.is(res.body.state, 'error');
 
   const countRecords = await GlobalToken.find({ user_id: 20, uid });
   t.is(countRecords.length, 0)
+  
 });

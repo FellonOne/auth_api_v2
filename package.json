@@ -39,6 +39,7 @@
     "jsonwebtoken": "^8.5.1",
     "koa": "^2.8.2",
     "koa-bodyparser": "^4.2.1",
+    "koa-helmet": "^5.2.0",
     "koa-jwt": "^3.6.0",
     "koa-router": "^7.4.0",
     "mongoose": "^5.7.3",

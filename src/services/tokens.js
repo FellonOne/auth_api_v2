@@ -111,10 +111,6 @@ class Tokens {
       httpOnly: true,
       maxAge: this.refreshTokenCookieExp
     });
-    ctx.cookies.set('UID', ctx.state.UID, {
-      httpOnly: true,
-      maxAge: 1000*60*60*24*365
-    });
   }
 
   getMoth(id) {

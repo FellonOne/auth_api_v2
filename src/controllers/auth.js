@@ -68,7 +68,12 @@ router.get('/validate', bodyParser(), async ctx => {
     ctx.body = {
       state: 'success',
       message: 'token valid',
-      body: user
+      body: {
+        login: user.login,
+        full_name: user.full_name,
+        roles_id: user.roles_id,
+        user_id: user.user_id
+      }
     }
   } catch ( jwtEpiredError ) {
     if (jwtEpiredError.name === jwt.TokenExpiredError.name) {

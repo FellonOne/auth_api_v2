@@ -11,7 +11,7 @@ const router = new Router();
 
 router.get('/refresh', bodyParser(), async ctx => {
   const refreshToken = ctx.cookies.get('LAC_RT');
-
+  
   if (refreshToken === null || refreshToken === undefined || refreshToken === '') {
     const err = new Error(`Empty body for /global/refresh`); 
     err.status = 404; throw err;
